@@ -20,6 +20,9 @@ export interface PlaybackState {
   currentTrack: PlaylistTrack | null;
   currentTime: number;
   duration: number;
+  queue: PlaylistTrack[];
+  queueIndex: number;
+  repeatMode: RepeatMode;
 }
 
 export type MusicView = "playlists" | "albums" | "artists" | "songs";
