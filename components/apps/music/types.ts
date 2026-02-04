@@ -1,9 +1,11 @@
 export interface PlaylistTrack {
   id: string;
   title: string;
+  name?: string;
   artist: string;
-  album?: string;
-  duration?: number;
+  album: string;
+  albumArt: string;
+  duration: number;
   url?: string;
 }
 
