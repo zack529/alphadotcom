@@ -35,7 +35,7 @@ export default function RootLayout({
       <body className="h-dvh">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
