@@ -42,6 +42,22 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
       setIsAdmin(true);
     }
   }, []);
+
+  // Handle browser back button on mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handlePopState = () => {
+      // If we're on /notes (no slug), show sidebar
+      if (window.location.pathname === "/notes") {
+        setShowSidebar(true);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isMobile]);
+
   // Container ref for scoping dialogs to this app (fallback when not in desktop shell)
   const containerRef = useRef<HTMLDivElement>(null);
   // Use window's dialog container when in desktop shell, otherwise use local ref
@@ -138,11 +154,12 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
       .single();
     if (fullNote) {
       setSelectedNote(fullNote as NoteType);
-      // Update URL to reflect selected note
-      window.history.replaceState(null, "", `/notes/${note.slug}`);
-      // On mobile, hide sidebar when note is selected
+      // Update URL to reflect selected note (use pushState on mobile so back button works)
       if (isMobile) {
+        window.history.pushState(null, "", `/notes/${note.slug}`);
         setShowSidebar(false);
+      } else {
+        window.history.replaceState(null, "", `/notes/${note.slug}`);
       }
     }
   }, [supabase, isMobile]);

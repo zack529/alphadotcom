@@ -94,6 +94,9 @@ export const NoteItem = React.memo(function NoteItem({
 
   const canEditOrDelete = item.session_id === sessionId;
 
+  // Only enable swipe if user can perform any action (admin can pin, session owner can edit/delete)
+  const canSwipe = isAdmin || canEditOrDelete;
+
   const handleSwipeAction = (action: () => void) => {
     if (isSwipeOpen) {
       action();
@@ -181,6 +184,22 @@ export const NoteItem = React.memo(function NoteItem({
   });
 
   if (isMobile) {
+    // If user can't perform any swipe actions, render without swipe functionality
+    if (!canSwipe) {
+      return (
+        <div
+          className={`relative ${
+            showDivider
+              ? 'after:content-[""] after:block after:mx-6 after:border-t after:border-muted-foreground/20'
+              : ""
+          }`}
+        >
+          {NoteContent}
+        </div>
+      );
+    }
+
+    // User can swipe - enable swipe gestures
     return (
       <div {...handlers} className="relative overflow-hidden">
         <div
