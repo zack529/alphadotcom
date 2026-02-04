@@ -8,4 +8,6 @@ export interface Note {
     emoji?: string;
     public: boolean;
     category?: string;
+    pinned?: boolean;
+    sort_order?: number;
   }

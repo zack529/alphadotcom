@@ -40,8 +40,10 @@ export function NotesDesktopPage({ slug }: NotesDesktopPageProps) {
         setCurrentNoteSlug(noteSlug);
 
         // On desktop, redirect /notes to /notes/about-me for URL consistency
+        // Preserve query params (e.g., ?admin=...)
         if (!mobile && path === "/notes") {
-          window.history.replaceState(null, "", "/notes/about-me");
+          const search = window.location.search;
+          window.history.replaceState(null, "", `/notes/about-me${search}`);
         }
       } else if (path.startsWith("/messages")) {
         setCurrentApp("messages");

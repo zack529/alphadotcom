@@ -74,6 +74,7 @@ interface SidebarContentProps {
   useCallbackNavigation?: boolean;
   isMobile?: boolean;
   onReorder: (notes: Note[]) => void;
+  isAdmin?: boolean;
 }
 
 export function SidebarContent({
@@ -93,13 +94,15 @@ export function SidebarContent({
   useCallbackNavigation = false,
   isMobile = false,
   onReorder,
+  isAdmin = false,
 }: SidebarContentProps) {
   const router = useRouter();
 
+  // Only enable drag sensors for admin users
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: isAdmin ? 8 : 99999, // Effectively disable for non-admin
       },
     }),
     useSensor(KeyboardSensor, {
@@ -139,6 +142,9 @@ export function SidebarContent({
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      // Only allow reordering if admin
+      if (!isAdmin) return;
+
       const { active, over } = event;
 
       if (over && active.id !== over.id) {
@@ -148,7 +154,7 @@ export function SidebarContent({
         onReorder(newNotes);
       }
     },
-    [notes, onReorder]
+    [notes, onReorder, isAdmin]
   );
 
   const noteIds = useMemo(() => notes.map((note) => note.slug), [notes]);
@@ -215,6 +221,7 @@ export function SidebarContent({
                       showDivider={index < categorizedNotes[category].length - 1}
                       useCallbackNavigation={useCallbackNavigation}
                       isMobile={isMobile}
+                      isAdmin={isAdmin}
                     />
                   ))}
                 </ul>
@@ -241,6 +248,7 @@ export function SidebarContent({
               setOpenSwipeItemSlug={setOpenSwipeItemSlug}
               showDivider={index < localSearchResults.length - 1}
               useCallbackNavigation={useCallbackNavigation}
+              isAdmin={isAdmin}
             />
           ))}
         </ul>

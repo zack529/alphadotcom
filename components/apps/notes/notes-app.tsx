@@ -15,26 +15,61 @@ interface NotesAppProps {
   initialSlug?: string; // If provided, select this note on load
 }
 
+const ADMIN_SECRET = "$4gzxxh";
+
 export function NotesApp({ isMobile = false, inShell = false, initialSlug }: NotesAppProps) {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [selectedNote, setSelectedNote] = useState<NoteType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const supabase = createClient();
   const windowFocus = useWindowFocus();
+
+  // Check for admin mode - runs on client after hydration
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const adminParam = params.get("admin");
+
+    if (adminParam === "logout") {
+      // Clear admin mode
+      localStorage.removeItem("notes_admin");
+      setIsAdmin(false);
+    } else if (adminParam === ADMIN_SECRET) {
+      localStorage.setItem("notes_admin", "true");
+      setIsAdmin(true);
+    } else if (localStorage.getItem("notes_admin") === "true") {
+      setIsAdmin(true);
+    }
+  }, []);
   // Container ref for scoping dialogs to this app (fallback when not in desktop shell)
   const containerRef = useRef<HTMLDivElement>(null);
   // Use window's dialog container when in desktop shell, otherwise use local ref
   const dialogContainer = windowFocus?.dialogContainerRef?.current ?? containerRef.current;
 
+  // Fetch public notes
+  const fetchPublicNotes = useCallback(async () => {
+    const { data } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("public", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+    return data;
+  }, [supabase]);
+
+  // Refresh public notes (for use after pinning/reordering)
+  const refreshPublicNotes = useCallback(async () => {
+    const data = await fetchPublicNotes();
+    if (data) {
+      setNotes(data);
+    }
+  }, [fetchPublicNotes]);
+
   // Fetch public notes on mount
   useEffect(() => {
-    async function fetchNotes() {
-      const { data } = await supabase
-        .from("notes")
-        .select("*")
-        .eq("public", true)
-        .order("created_at", { ascending: false });
+    async function initNotes() {
+      const data = await fetchPublicNotes();
 
       if (data) {
         setNotes(data);
@@ -93,8 +128,8 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
       }
       setLoading(false);
     }
-    fetchNotes();
-  }, [supabase, initialSlug, isMobile]);
+    initNotes();
+  }, [supabase, initialSlug, isMobile, fetchPublicNotes]);
 
   const handleNoteSelect = useCallback(async (note: NoteType) => {
     // Fetch full note data using RPC
@@ -154,6 +189,8 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
               selectedSlug={selectedNote?.slug}
               useCallbackNavigation
               onNoteCreated={handleNoteCreated}
+              onRefreshPublicNotes={refreshPublicNotes}
+              isAdmin={isAdmin}
             />
           ) : (
             <div className="h-full">
@@ -187,6 +224,8 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
           useCallbackNavigation
           onNoteCreated={handleNoteCreated}
           dialogContainer={dialogContainer}
+          onRefreshPublicNotes={refreshPublicNotes}
+          isAdmin={isAdmin}
         />
         <div className="flex-grow h-full overflow-hidden relative">
           {/* Drag overlay - matches nav height, doesn't affect layout */}

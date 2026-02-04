@@ -22,6 +22,7 @@ interface SortableNoteItemProps {
   showDivider?: boolean;
   useCallbackNavigation?: boolean;
   isMobile?: boolean;
+  isAdmin?: boolean;
 }
 
 export function SortableNoteItem({

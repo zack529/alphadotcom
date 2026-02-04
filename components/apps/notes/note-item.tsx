@@ -39,6 +39,7 @@ interface NoteItemProps {
   setOpenSwipeItemSlug: Dispatch<SetStateAction<string | null>>;
   showDivider?: boolean;
   useCallbackNavigation?: boolean;
+  isAdmin?: boolean;
 }
 
 export const NoteItem = React.memo(function NoteItem({
@@ -56,6 +57,7 @@ export const NoteItem = React.memo(function NoteItem({
   setOpenSwipeItemSlug,
   showDivider = false,
   useCallbackNavigation = false,
+  isAdmin = false,
 }: NoteItemProps) {
   const isMobile = useMobileDetect();
   const [isSwiping, setIsSwiping] = useState(false);
@@ -195,7 +197,7 @@ export const NoteItem = React.memo(function NoteItem({
         </div>
         <SwipeActions
           isOpen={isSwipeOpen}
-          onPin={() => handleSwipeAction(handlePinAction)}
+          onPin={isAdmin ? () => handleSwipeAction(handlePinAction) : undefined}
           onEdit={() => handleSwipeAction(handleEdit)}
           onDelete={() => handleSwipeAction(handleDelete)}
           isPinned={isPinned}
@@ -208,9 +210,11 @@ export const NoteItem = React.memo(function NoteItem({
       <ContextMenu>
         <ContextMenuTrigger>{NoteContent}</ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem onClick={handlePinAction} className="cursor-pointer">
-            {isPinned ? "Unpin" : "Pin"}
-          </ContextMenuItem>
+          {isAdmin && (
+            <ContextMenuItem onClick={handlePinAction} className="cursor-pointer">
+              {isPinned ? "Unpin" : "Pin"}
+            </ContextMenuItem>
+          )}
           {item.session_id === sessionId && (
             <>
               <ContextMenuItem onClick={handleEdit} className="cursor-pointer">

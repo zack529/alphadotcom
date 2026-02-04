@@ -24,8 +24,6 @@ import { cn } from "@/lib/utils";
 import { useFileMenu } from "@/lib/file-menu-context";
 import { createNote } from "@/lib/notes/create-note";
 
-const NOTE_ORDER_KEY = "noteOrder";
-
 export default function Sidebar({
   notes: publicNotes,
   onNoteSelect,
@@ -34,6 +32,8 @@ export default function Sidebar({
   useCallbackNavigation = false,
   onNoteCreated,
   dialogContainer,
+  onRefreshPublicNotes,
+  isAdmin = false,
 }: {
   notes: any[];
   onNoteSelect: (note: any) => void;
@@ -42,13 +42,14 @@ export default function Sidebar({
   useCallbackNavigation?: boolean;
   onNoteCreated?: (note: any) => void;
   dialogContainer?: HTMLElement | null;
+  onRefreshPublicNotes?: () => Promise<void>;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [selectedNoteSlug, setSelectedNoteSlug] = useState<string | null>(null);
-  const [pinnedNotes, setPinnedNotes] = useState<Set<string>>(new Set());
   const pathname = usePathname();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [localSearchResults, setLocalSearchResults] = useState<any[] | null>(
@@ -61,7 +62,6 @@ export default function Sidebar({
   );
   const [highlightedNote, setHighlightedNote] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [noteOrder, setNoteOrder] = useState<string[]>([]);
 
   const windowFocus = useWindowFocus();
   const fileMenu = useFileMenu();
@@ -88,63 +88,71 @@ export default function Sidebar({
     [allNotes, sessionId]
   );
 
-  // Load note order from localStorage
-  useEffect(() => {
-    const storedOrder = localStorage.getItem(NOTE_ORDER_KEY);
-    if (storedOrder) {
-      setNoteOrder(JSON.parse(storedOrder));
-    }
-  }, []);
+  // Pinned notes are now derived from database, not localStorage
+  const pinnedNotes = useMemo(() => {
+    const pinned = new Set<string>();
+    visibleNotes.forEach((note) => {
+      if (note.pinned) {
+        pinned.add(note.slug);
+      }
+    });
+    return pinned;
+  }, [visibleNotes]);
 
-  // Sort notes based on saved order, with pinned notes at top, then new notes, then ordered
+  // Sort notes: pinned first (by sort_order), then unpinned (by sort_order)
   const orderedNotes = useMemo(() => {
-    const orderMap = new Map(noteOrder.map((slug, index) => [slug, index]));
-
-    // Separate notes into pinned, ordered, and new (unordered)
     const pinnedList: Note[] = [];
-    const orderedList: Note[] = [];
-    const newNotes: Note[] = [];
+    const unpinnedList: Note[] = [];
 
     visibleNotes.forEach((note) => {
-      if (pinnedNotes.has(note.slug)) {
+      if (note.pinned) {
         pinnedList.push(note);
-      } else if (orderMap.has(note.slug)) {
-        orderedList.push(note);
       } else {
-        newNotes.push(note);
+        unpinnedList.push(note);
       }
     });
 
-    // Sort pinned notes by their saved position (or created_at if not in order)
-    pinnedList.sort((a, b) => {
-      const aIndex = orderMap.get(a.slug);
-      const bIndex = orderMap.get(b.slug);
-      if (aIndex !== undefined && bIndex !== undefined) {
-        return aIndex - bIndex;
-      }
+    // Sort by sort_order (lower first), then by created_at (newer first) as fallback
+    const sortByOrder = (a: Note, b: Note) => {
+      const aOrder = a.sort_order ?? 999999;
+      const bOrder = b.sort_order ?? 999999;
+      if (aOrder !== bOrder) return aOrder - bOrder;
       return b.created_at.localeCompare(a.created_at);
-    });
+    };
 
-    // Sort ordered notes by their saved position
-    orderedList.sort((a, b) => {
-      const aIndex = orderMap.get(a.slug) ?? 0;
-      const bIndex = orderMap.get(b.slug) ?? 0;
-      return aIndex - bIndex;
-    });
+    pinnedList.sort(sortByOrder);
+    unpinnedList.sort(sortByOrder);
 
-    // New notes sorted by created_at (newest first)
-    newNotes.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return [...pinnedList, ...unpinnedList];
+  }, [visibleNotes]);
 
-    // Pinned at top, then new notes, then ordered notes
-    return [...pinnedList, ...newNotes, ...orderedList];
-  }, [visibleNotes, noteOrder, pinnedNotes]);
+  // Handle reordering - save to database (admin only)
+  const handleReorder = useCallback(async (reorderedNotes: Note[]) => {
+    // Only allow reordering if admin
+    if (!isAdmin) {
+      return;
+    }
 
-  // Handle reordering
-  const handleReorder = useCallback((reorderedNotes: Note[]) => {
-    const newOrder = reorderedNotes.map((note) => note.slug);
-    setNoteOrder(newOrder);
-    localStorage.setItem(NOTE_ORDER_KEY, JSON.stringify(newOrder));
-  }, []);
+    const noteOrders = reorderedNotes.map((note, index) => ({
+      slug: note.slug,
+      sort_order: index,
+    }));
+
+    try {
+      await fetch("/api/notes/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ noteOrders }),
+      });
+      // Refresh to get updated order
+      refreshSessionNotes();
+      if (onRefreshPublicNotes) {
+        onRefreshPublicNotes();
+      }
+    } catch (error) {
+      console.error("Error saving note order:", error);
+    }
+  }, [refreshSessionNotes, onRefreshPublicNotes, isAdmin]);
 
   useEffect(() => {
     if (selectedNoteSlug && scrollViewportRef.current) {
@@ -186,12 +194,6 @@ export default function Sidebar({
     }
   }, [selectedNoteSlug, orderedNotes]);
 
-  useEffect(() => {
-    const storedPinnedNotes = localStorage.getItem("pinnedNotes");
-    if (storedPinnedNotes) {
-      setPinnedNotes(new Set(JSON.parse(storedPinnedNotes)));
-    }
-  }, []);
 
   useEffect(() => {
     if (localSearchResults && localSearchResults.length > 0) {
@@ -247,22 +249,30 @@ export default function Sidebar({
   );
 
   const handlePinToggle = useCallback(
-    (slug: string, silent: boolean = false) => {
-      let isPinning = false;
-      setPinnedNotes((prev) => {
-        const newPinned = new Set(prev);
-        isPinning = !newPinned.has(slug);
-        if (isPinning) {
-          newPinned.add(slug);
-        } else {
-          newPinned.delete(slug);
+    async (slug: string, silent: boolean = false) => {
+      // Only allow pinning if admin
+      if (!isAdmin) {
+        return;
+      }
+
+      const isPinned = pinnedNotes.has(slug);
+      const isPinning = !isPinned;
+
+      try {
+        await fetch("/api/notes/update", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug, pinned: isPinning }),
+        });
+
+        // Refresh to get updated data
+        refreshSessionNotes();
+        if (onRefreshPublicNotes) {
+          onRefreshPublicNotes();
         }
-        localStorage.setItem(
-          "pinnedNotes",
-          JSON.stringify(Array.from(newPinned))
-        );
-        return newPinned;
-      });
+      } catch (error) {
+        console.error("Error toggling pin:", error);
+      }
 
       clearSearch();
 
@@ -279,7 +289,7 @@ export default function Sidebar({
         });
       }
     },
-    [router, isMobile, useCallbackNavigation, clearSearch, orderedNotes, onNoteSelect]
+    [router, isMobile, useCallbackNavigation, clearSearch, orderedNotes, onNoteSelect, pinnedNotes, refreshSessionNotes, onRefreshPublicNotes, isAdmin]
   );
 
   const handleNoteDelete = useCallback(
@@ -300,13 +310,6 @@ export default function Sidebar({
             session_arg: sessionId,
           });
         }
-
-        // Remove from order
-        setNoteOrder((prev) => {
-          const newOrder = prev.filter((slug) => slug !== noteToDelete.slug);
-          localStorage.setItem(NOTE_ORDER_KEY, JSON.stringify(newOrder));
-          return newOrder;
-        });
 
         const deletedNoteIndex = orderedNotes.findIndex(
           (note) => note.slug === noteToDelete.slug
@@ -564,6 +567,7 @@ export default function Sidebar({
               useCallbackNavigation={useCallbackNavigation}
               isMobile={isMobile}
               onReorder={handleReorder}
+              isAdmin={isAdmin}
             />
           </div>
         </div>
