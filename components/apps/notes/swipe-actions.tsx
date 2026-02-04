@@ -3,7 +3,7 @@ import { Pin, PinOff, Trash2, Edit } from "lucide-react";
 
 interface SwipeActionsProps {
   isOpen: boolean;
-  onPin: () => void;
+  onPin?: () => void;
   onEdit: () => void;
   onDelete: () => void;
   isPinned: boolean;
@@ -26,12 +26,14 @@ export function SwipeActions({
           : "opacity-0 pointer-events-none"
       }`}
     >
-      <button
-        onClick={onPin}
-        className="bg-[#3293FC] text-white p-2 h-full w-16 flex items-center justify-center"
-      >
-        {isPinned ? <PinOff size={20} /> : <Pin size={20} />}
-      </button>
+      {onPin && (
+        <button
+          onClick={onPin}
+          className="bg-[#3293FC] text-white p-2 h-full w-16 flex items-center justify-center"
+        >
+          {isPinned ? <PinOff size={20} /> : <Pin size={20} />}
+        </button>
+      )}
       {canEditOrDelete && (
         <>
           <button
