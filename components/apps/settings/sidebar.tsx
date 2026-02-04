@@ -143,7 +143,7 @@ export function Sidebar({
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-background mb-4"
                   >
                     <Image
-                      src="/headshot.jpg"
+                      src="/headshot.png"
                       alt="Alpha"
                       width={56}
                       height={56}
@@ -302,7 +302,7 @@ export function Sidebar({
                     )}
                   >
                     <Image
-                      src="/headshot.jpg"
+                      src="/headshot.png"
                       alt="Alpha"
                       width={48}
                       height={48}

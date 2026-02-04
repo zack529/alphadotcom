@@ -134,6 +134,36 @@ export default function NoteContent({
       setIsEditing(false);
       return;
     }
+    // Cmd+Shift+K or Ctrl+Shift+K to insert link
+    if (e.key === 'K' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
+      e.preventDefault();
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const content = textarea.value;
+      const selectedText = content.substring(start, end);
+
+      // Prompt for URL
+      const url = window.prompt('Enter the URL:', 'https://');
+      if (!url || url === 'https://') return;
+
+      // Prompt for link text if nothing selected
+      const linkText = selectedText || window.prompt('Enter the link text:', '') || url;
+      if (!linkText) return;
+
+      // Insert the link markdown
+      const linkMarkdown = `[${linkText}](${url})`;
+      const newContent = content.substring(0, start) + linkMarkdown + content.substring(end);
+      saveNote({ content: newContent });
+
+      // Position cursor after the link
+      const newCursorPos = start + linkMarkdown.length;
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+      return;
+    }
     if (e.key === 'Tab') {
       e.preventDefault();
       const textarea = e.currentTarget;

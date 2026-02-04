@@ -86,7 +86,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         {/* Avatar with shadow */}
         <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl">
           <Image
-            src="/headshot.jpg"
+            src="/headshot.png"
             alt="Alpha"
             width={64}
             height={64}
