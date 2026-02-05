@@ -13,8 +13,13 @@ import { Note } from "@/lib/notes/types";
 import { getDisplayDateByCategory } from "@/lib/notes/note-utils";
 import { Dispatch, SetStateAction } from "react";
 
-function previewContent(content: string): string {
-  return content
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + "...";
+}
+
+function previewContent(content: string, maxLength: number = 50): string {
+  const cleaned = content
     .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
     .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
     .replace(/\[[ x]\]/g, "")
@@ -22,6 +27,8 @@ function previewContent(content: string): string {
     .replace(/\n+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+  return truncateText(cleaned, maxLength);
 }
 
 interface NoteItemProps {
@@ -103,13 +110,16 @@ export const NoteItem = React.memo(function NoteItem({
     }
   };
 
+  const titleText = item.emoji ? `${item.emoji} ${item.title}` : item.title;
+  const truncatedTitle = truncateText(titleText, 35);
+
   const noteContentInner = (
-    <div className="w-full min-w-0 overflow-hidden" style={{ maxWidth: 'calc(100% - 16px)' }}>
-      <h2 className="text-sm font-bold px-2 overflow-hidden text-ellipsis whitespace-nowrap">
-        {item.emoji ? `${item.emoji} ` : ""}{item.title}
+    <div className="w-full min-w-0 overflow-hidden">
+      <h2 className="text-sm font-bold px-2">
+        {truncatedTitle}
       </h2>
       <p
-        className={`text-xs pl-2 overflow-hidden text-ellipsis whitespace-nowrap ${
+        className={`text-xs pl-2 ${
           !isMobile && (
             (isSearching && isHighlighted) ||
             (!isSearching && item.slug === selectedNoteSlug)
