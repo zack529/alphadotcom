@@ -105,11 +105,11 @@ export const NoteItem = React.memo(function NoteItem({
 
   const noteContentInner = (
     <>
-      <h2 className="text-sm font-bold px-2 break-words line-clamp-1">
+      <h2 className="text-sm font-bold px-2 truncate">
         {item.emoji ? `${item.emoji} ` : ""}{item.title}
       </h2>
       <p
-        className={`text-xs pl-2 break-words line-clamp-1 ${
+        className={`text-xs pl-2 truncate ${
           !isMobile && (
             (isSearching && isHighlighted) ||
             (!isSearching && item.slug === selectedNoteSlug)
@@ -145,13 +145,13 @@ export const NoteItem = React.memo(function NoteItem({
     >
       <div
         data-note-slug={item.slug}
-        className={`h-full w-full px-4`}
+        className={`h-full w-full px-4 overflow-hidden`}
       >
         {useCallbackNavigation ? (
           <button
             onClick={() => onNoteSelect(item)}
             tabIndex={-1}
-            className="block py-2 h-full w-full flex flex-col justify-center text-left"
+            className="block py-2 h-full w-full flex flex-col justify-center text-left overflow-hidden min-w-0"
           >
             {noteContentInner}
           </button>
@@ -160,7 +160,7 @@ export const NoteItem = React.memo(function NoteItem({
             href={`/notes/${item.slug || ""}`}
             prefetch={true}
             tabIndex={-1}
-            className="block py-2 h-full w-full flex flex-col justify-center"
+            className="block py-2 h-full w-full flex flex-col justify-center overflow-hidden min-w-0"
           >
             {noteContentInner}
           </Link>
