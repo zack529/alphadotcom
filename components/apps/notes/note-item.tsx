@@ -111,10 +111,10 @@ export const NoteItem = React.memo(function NoteItem({
   };
 
   const titleText = item.emoji ? `${item.emoji} ${item.title}` : item.title;
-  const truncatedTitle = truncateText(titleText, isMobile ? 30 : 32);
+  const truncatedTitle = truncateText(titleText, isMobile ? 35 : 45);
 
   const dateStr = getDisplayDateByCategory(item.category, item.id).toLocaleDateString("en-US");
-  const previewText = previewContent(item.content, isMobile ? 25 : 35);
+  const previewText = previewContent(item.content, isMobile ? 38 : 50);
   const secondLine = `${dateStr} ${previewText}`;
 
   const noteContentInner = (
