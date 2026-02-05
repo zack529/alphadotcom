@@ -104,12 +104,12 @@ export const NoteItem = React.memo(function NoteItem({
   };
 
   const noteContentInner = (
-    <>
-      <h2 className="text-sm font-bold px-2 truncate">
+    <div className="w-full min-w-0 overflow-hidden">
+      <h2 className="text-sm font-bold px-2 truncate w-full">
         {item.emoji ? `${item.emoji} ` : ""}{item.title}
       </h2>
       <p
-        className={`text-xs pl-2 truncate ${
+        className={`text-xs pl-2 truncate w-full ${
           !isMobile && (
             (isSearching && isHighlighted) ||
             (!isSearching && item.slug === selectedNoteSlug)
@@ -123,13 +123,13 @@ export const NoteItem = React.memo(function NoteItem({
         </span>{" "}
         {previewContent(item.content)}
       </p>
-    </>
+    </div>
   );
 
   const NoteContent = (
     <li
       tabIndex={0}
-      className={`h-[70px] w-full ${
+      className={`h-[70px] w-full max-w-full overflow-hidden ${
         !isMobile && (
           (isSearching && isHighlighted) ||
           (!isSearching && item.slug === selectedNoteSlug)

@@ -189,7 +189,7 @@ export function SidebarContent({
   }, [categorizedNotes]);
 
   return (
-    <div className="py-2">
+    <div className="py-2 w-full max-w-full overflow-hidden">
       {localSearchResults === null ? (
         <DndContext
           sensors={sensors}
