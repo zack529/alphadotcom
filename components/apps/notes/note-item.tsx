@@ -111,19 +111,19 @@ export const NoteItem = React.memo(function NoteItem({
   };
 
   const titleText = item.emoji ? `${item.emoji} ${item.title}` : item.title;
-  const truncatedTitle = truncateText(titleText, isMobile ? 35 : 45);
+  const truncatedTitle = truncateText(titleText, isMobile ? 50 : 60);
 
   const dateStr = getDisplayDateByCategory(item.category, item.id).toLocaleDateString("en-US");
-  const previewText = previewContent(item.content, isMobile ? 38 : 50);
+  const previewText = previewContent(item.content, isMobile ? 55 : 70);
   const secondLine = `${dateStr} ${previewText}`;
 
   const noteContentInner = (
-    <div className="w-full min-w-0 overflow-hidden">
-      <h2 className="text-sm font-bold px-2 whitespace-nowrap">
+    <div className="w-full min-w-0 overflow-hidden pr-2">
+      <h2 className="text-sm font-bold px-2 whitespace-nowrap overflow-hidden">
         {truncatedTitle}
       </h2>
       <p
-        className={`text-xs pl-2 whitespace-nowrap ${
+        className={`text-xs pl-2 whitespace-nowrap overflow-hidden ${
           !isMobile && (
             (isSearching && isHighlighted) ||
             (!isSearching && item.slug === selectedNoteSlug)
