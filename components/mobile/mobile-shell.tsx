@@ -35,7 +35,7 @@ export function MobileShell({ initialApp, initialNoteSlug }: MobileShellProps) {
 
   return (
     <RecentsProvider>
-      <div className="h-dvh flex flex-col bg-background">
+      <div className="h-dvh flex flex-col bg-background overflow-x-hidden">
         {activeAppId === "notes" && (
           <NotesApp isMobile={true} inShell={false} initialSlug={initialNoteSlug} />
         )}

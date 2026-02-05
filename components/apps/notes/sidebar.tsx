@@ -509,7 +509,7 @@ export default function Sidebar({
       className={cn(
         "flex flex-col h-full",
         isMobile
-          ? "w-full max-w-full bg-background"
+          ? "w-full max-w-full bg-background overflow-x-hidden"
           : "w-[320px] border-r border-muted-foreground/20 bg-muted"
       )}
     >
@@ -539,7 +539,7 @@ export default function Sidebar({
       >
         <div ref={scrollViewportRef} className="flex flex-col w-full">
           <SessionId setSessionId={setSessionId} />
-          <div className={`${isMobile ? "w-full" : "w-[320px]"} px-2`}>
+          <div className={`${isMobile ? "w-full max-w-full" : "w-[320px]"} px-2 overflow-hidden`}>
             <SearchBar
               notes={allNotes}
               onSearchResults={setLocalSearchResults}

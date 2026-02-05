@@ -98,11 +98,13 @@
   }
 }
 
-/* Prevent iOS overscroll behavior */
+/* Prevent iOS overscroll behavior and horizontal overflow */
 html, body {
   overscroll-behavior-y: none;
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
+  max-width: 100vw;
 }
 
 /* Typing indicator animation */

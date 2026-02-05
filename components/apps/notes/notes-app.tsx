@@ -196,7 +196,7 @@ export function NotesApp({ isMobile = false, inShell = false, initialSlug }: Not
           data-app="notes"
           tabIndex={-1}
           onMouseDown={() => containerRef.current?.focus()}
-          className="notes-app h-full bg-background text-foreground outline-none"
+          className="notes-app h-full bg-background text-foreground outline-none overflow-x-hidden"
         >
           {showSidebar ? (
             <Sidebar
