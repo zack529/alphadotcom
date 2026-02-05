@@ -6,6 +6,7 @@
   line-height: 1.5;
   overflow-wrap: break-word;
   word-break: break-word;
+  overflow-x: hidden;
 }
 
 .markdown-body h1 {
@@ -47,8 +48,9 @@
 }
 
 .markdown-body a {
-  color: #e2a727; 
+  color: #e2a727;
   text-decoration: underline;
+  word-break: break-all;
 }
 
 .markdown-body a:hover {
@@ -141,13 +143,20 @@
   border-radius: 3px;
   padding: 0.2em 0.4em;
   font-size: 85%;
+  word-break: break-all;
 }
 
 .markdown-body pre {
   background-color: #f6f8fa;
   padding: 16px;
-  overflow: auto;
+  overflow-x: auto;
   border-radius: 3px;
+  max-width: 100%;
+}
+
+.markdown-body pre code {
+  word-break: normal;
+  white-space: pre-wrap;
 }
 
 .markdown-body table {
@@ -186,8 +195,7 @@
 }
 
 .markdown-body img {
-  max-width: 672px;
-  width: 100%;
+  max-width: 100%;
   height: auto;
   display: block;
   margin: 16px 0;

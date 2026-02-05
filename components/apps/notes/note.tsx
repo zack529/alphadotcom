@@ -125,7 +125,7 @@ export default function Note({ note: initialNote, onBack }: NoteProps) {
 
   return (
     <div
-      className="h-full overflow-y-auto bg-background"
+      className="h-full overflow-y-auto overflow-x-hidden bg-background"
       onClick={() => {
         // Exit edit mode when clicking anywhere outside the textarea
         if (isEditing) {
