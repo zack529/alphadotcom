@@ -127,8 +127,7 @@ function DesktopContent({ initialNoteSlug }: { initialNoteSlug?: string }) {
         fill
         className="object-cover -z-10"
         priority
-        quality={100}
-        unoptimized
+        quality={85}
       />
       <MenuBar
         onOpenSettings={handleOpenSettings}

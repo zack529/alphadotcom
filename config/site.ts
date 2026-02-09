@@ -1,5 +1,7 @@
 export const siteConfig = {
   name: "Alpha Film & Television",
   title: "Alpha Film & Television",
-  url: "http://localhost:3000",
+  description:
+    "Alpha Film & Television — entertainment company focused on film financing, production, and distribution.",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 };

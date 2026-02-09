@@ -4,6 +4,7 @@ import { createClient as createBrowserClient } from "@/utils/supabase/client";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { Note as NoteType } from "@/lib/notes/types";
+import { siteConfig } from "@/config/site";
 import { NotesDesktopPage } from "./notes-desktop-page";
 
 // Enable ISR with a reasonable revalidation period for public notes
@@ -40,6 +41,16 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+/** Strip HTML tags and truncate to a target length for meta descriptions. */
+function makeDescription(content: string, maxLen = 155): string {
+  const plain = content
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (plain.length <= maxLen) return plain;
+  return plain.slice(0, maxLen - 1).trimEnd() + "\u2026";
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -51,15 +62,30 @@ export async function generateMetadata({
     return { title: "Note not found" };
   }
 
-  const title = note.title || "new note";
-  const emoji = note.emoji || "👋🏼";
+  const title = note.title || "Untitled Note";
+  const emoji = note.emoji || "";
+  const description = makeDescription(note.content);
+  const ogImage = `/notes/api/og/?title=${encodeURIComponent(title)}&emoji=${encodeURIComponent(emoji)}`;
+  const pageUrl = `${siteConfig.url}/notes/${cleanSlug}`;
 
   return {
-    title: "Alpha Film & Television",
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
     openGraph: {
-      images: [
-        `/notes/api/og/?title=${encodeURIComponent(title)}&emoji=${encodeURIComponent(emoji)}`,
-      ],
+      title: `${emoji ? emoji + " " : ""}${title}`,
+      description,
+      url: pageUrl,
+      type: "article",
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${emoji ? emoji + " " : ""}${title}`,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -74,6 +100,53 @@ export default async function NotePage({ params }: PageProps) {
     return redirect("/notes/error");
   }
 
-  // Render Desktop with notes app focused on this specific note
-  return <NotesDesktopPage slug={cleanSlug} />;
+  const noteTitle = note.title || "Untitled Note";
+  const plainContent = note.content
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: noteTitle,
+    author: {
+      "@type": "Organization",
+      name: siteConfig.name,
+    },
+    datePublished: note.created_at,
+    url: `${siteConfig.url}/notes/${cleanSlug}`,
+  };
+
+  return (
+    <>
+      {/* Structured data for search engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* Server-rendered content for SEO crawlability */}
+      <article
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: 0,
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0,0,0,0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        <h1>{note.emoji ? `${note.emoji} ` : ""}{noteTitle}</h1>
+        <div dangerouslySetInnerHTML={{ __html: note.content }} />
+      </article>
+
+      {/* Visual desktop / mobile UI */}
+      <NotesDesktopPage slug={cleanSlug} />
+    </>
+  );
 }

@@ -14,7 +14,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Leopard",
     version: "10.5",
     darwinVersion: "9.0.0",
-    wallpaperFile: "leopard-server-wallpaper.jpg",
+    wallpaperFile: "leopard-server-wallpaper.webp",
     releaseYear: 2007,
   },
   {
@@ -22,7 +22,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Snow Leopard",
     version: "10.6",
     darwinVersion: "10.0.0",
-    wallpaperFile: "snow-leopard-wallpaper.jpg",
+    wallpaperFile: "snow-leopard-wallpaper.webp",
     releaseYear: 2009,
   },
   {
@@ -30,7 +30,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Lion",
     version: "10.7",
     darwinVersion: "11.0.0",
-    wallpaperFile: "lion-wallpaper.jpg",
+    wallpaperFile: "lion-wallpaper.webp",
     releaseYear: 2011,
   },
   {
@@ -38,7 +38,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Mountain Lion",
     version: "10.8",
     darwinVersion: "12.0.0",
-    wallpaperFile: "mountain-lion-wallpaper.jpg",
+    wallpaperFile: "mountain-lion-wallpaper.webp",
     releaseYear: 2012,
   },
   {
@@ -46,7 +46,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Yosemite",
     version: "10.10",
     darwinVersion: "14.0.0",
-    wallpaperFile: "yosemite-wallpaper.jpg",
+    wallpaperFile: "yosemite-wallpaper.webp",
     releaseYear: 2014,
   },
   {
@@ -54,7 +54,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "El Capitan",
     version: "10.11",
     darwinVersion: "15.0.0",
-    wallpaperFile: "elcapitan-wallpaper.jpg",
+    wallpaperFile: "elcapitan-wallpaper.webp",
     releaseYear: 2015,
   },
   {
@@ -62,7 +62,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Sierra",
     version: "10.12",
     darwinVersion: "16.0.0",
-    wallpaperFile: "sierra-wallpaper.png",
+    wallpaperFile: "sierra-wallpaper.webp",
     releaseYear: 2016,
   },
   {
@@ -70,7 +70,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Mojave",
     version: "10.14",
     darwinVersion: "18.0.0",
-    wallpaperFile: "mojave-wallpaper.jpg",
+    wallpaperFile: "mojave-wallpaper.webp",
     releaseYear: 2018,
   },
   {
@@ -78,7 +78,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Sonoma",
     version: "14.0",
     darwinVersion: "23.0.0",
-    wallpaperFile: "sonoma-wallpaper.png",
+    wallpaperFile: "sonoma-wallpaper.webp",
     releaseYear: 2023,
   },
   {
@@ -86,7 +86,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Sequoia",
     version: "15.0",
     darwinVersion: "24.0.0",
-    wallpaperFile: "sequoia-wallpaper.png",
+    wallpaperFile: "sequoia-wallpaper.webp",
     releaseYear: 2024,
   },
   {
@@ -94,7 +94,7 @@ export const OS_VERSIONS: OSVersion[] = [
     name: "Tahoe",
     version: "26.0",
     darwinVersion: "25.0.0",
-    wallpaperFile: "tahoe-wallpaper.png",
+    wallpaperFile: "tahoe-wallpaper.webp",
     releaseYear: 2025,
   },
 ];
