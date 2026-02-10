@@ -42,7 +42,8 @@ type PageProps = {
 };
 
 /** Strip HTML tags and truncate to a target length for meta descriptions. */
-function makeDescription(content: string, maxLen = 155): string {
+function makeDescription(content: string | null | undefined, maxLen = 155): string {
+  if (!content) return "";
   const plain = content
     .replace(/<[^>]*>/g, "")
     .replace(/\s+/g, " ")
@@ -101,10 +102,7 @@ export default async function NotePage({ params }: PageProps) {
   }
 
   const noteTitle = note.title || "Untitled Note";
-  const plainContent = note.content
-    .replace(/<[^>]*>/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  const noteContent = note.content || "";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -142,7 +140,7 @@ export default async function NotePage({ params }: PageProps) {
         }}
       >
         <h1>{note.emoji ? `${note.emoji} ` : ""}{noteTitle}</h1>
-        <div dangerouslySetInnerHTML={{ __html: note.content }} />
+        <div dangerouslySetInnerHTML={{ __html: noteContent }} />
       </article>
 
       {/* Visual desktop / mobile UI */}
