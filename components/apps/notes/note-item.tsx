@@ -139,7 +139,8 @@ export const NoteItem = React.memo(function NoteItem({
   );
 
   const NoteContent = (
-    <li
+    <div
+      role="listitem"
       tabIndex={0}
       className={`h-[70px] w-full max-w-full overflow-hidden ${
         !isMobile && (
@@ -178,7 +179,7 @@ export const NoteItem = React.memo(function NoteItem({
           </Link>
         )}
       </div>
-    </li>
+    </div>
   );
 
   const handlers = useSwipeable({

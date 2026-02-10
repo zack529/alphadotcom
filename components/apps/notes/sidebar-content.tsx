@@ -202,7 +202,7 @@ export function SidebarContent({
                 <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {categoryLabels[category]}
                 </div>
-                <ul>
+                <div role="list">
                   {categorizedNotes[category].map((item: Note, index: number) => (
                     <SortableNoteItem
                       key={item.slug}
@@ -224,13 +224,13 @@ export function SidebarContent({
                       isAdmin={isAdmin}
                     />
                   ))}
-                </ul>
+                </div>
               </div>
             ))}
           </SortableContext>
         </DndContext>
       ) : localSearchResults.length > 0 ? (
-        <ul>
+        <div role="list">
           {localSearchResults.map((item: Note, index: number) => (
             <NoteItem
               key={item.id}
@@ -251,7 +251,7 @@ export function SidebarContent({
               isAdmin={isAdmin}
             />
           ))}
-        </ul>
+        </div>
       ) : (
         <p className="text-sm text-muted-foreground px-2 mt-4">No results found</p>
       )}

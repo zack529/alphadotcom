@@ -17,6 +17,23 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseHostname = supabaseUrl ? new URL(supabaseUrl).hostname : null;
 
 const nextConfig = {
+  productionBrowserSourceMaps: true,
+  experimental: {
+    optimizePackageImports: [
+      "@fortawesome/free-solid-svg-icons",
+      "@fortawesome/free-brands-svg-icons",
+      "lucide-react",
+      "date-fns",
+      "lodash",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-context-menu",
+      "@radix-ui/react-scroll-area",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-toast",
+    ],
+  },
   images: {
     remotePatterns: [
       // Supabase Storage for photos

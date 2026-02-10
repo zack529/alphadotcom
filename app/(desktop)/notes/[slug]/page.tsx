@@ -65,7 +65,7 @@ export async function generateMetadata({
 
   const title = note.title || "Untitled Note";
   const emoji = note.emoji || "";
-  const description = makeDescription(note.content);
+  const description = makeDescription(note.content) || siteConfig.description;
   const ogImage = `/notes/api/og/?title=${encodeURIComponent(title)}&emoji=${encodeURIComponent(emoji)}`;
   const pageUrl = `${siteConfig.url}/notes/${cleanSlug}`;
 
