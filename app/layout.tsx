@@ -42,7 +42,7 @@ export default function RootLayout({
       <head>
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, interactive-widget=resizes-content"
+          content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
         />
       </head>
       <body className="h-dvh">
@@ -54,7 +54,9 @@ export default function RootLayout({
         >
           <SystemSettingsProvider>
             <AudioProvider>
-              {children}
+              <main className="h-full">
+                {children}
+              </main>
               <Toaster />
             </AudioProvider>
           </SystemSettingsProvider>

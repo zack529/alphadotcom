@@ -117,13 +117,13 @@ export function WindowControls({
         icon={<CloseIcon />}
         iconColorClass="text-black/50"
         onClick={isCloseInteractive ? onClose : undefined}
-        ariaLabel={isCloseInteractive ? closeLabel : undefined}
+        ariaLabel={closeLabel}
         interactive={isCloseInteractive}
       />
       {closeOnly ? (
         <>
-          <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-          <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+          <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
+          <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
         </>
       ) : (
         <>
@@ -132,7 +132,7 @@ export function WindowControls({
             icon={<MinimizeIcon />}
             iconColorClass="text-black/50"
             onClick={inShell ? onMinimize : undefined}
-            ariaLabel={inShell ? minimizeLabel : undefined}
+            ariaLabel={minimizeLabel}
             interactive={inShell}
           />
           <WindowControlButton
@@ -140,7 +140,7 @@ export function WindowControls({
             icon={<ZoomIcon isMaximized={inShell ? isMaximized : false} />}
             iconColorClass="text-black/50"
             onClick={inShell ? onToggleMaximize : undefined}
-            ariaLabel={inShell ? (isMaximized ? restoreLabel : maximizeLabel) : undefined}
+            ariaLabel={isMaximized ? restoreLabel : maximizeLabel}
             interactive={inShell}
           />
         </>
